@@ -1,0 +1,119 @@
+---
+import { href, asset, t, type Lang } from '../i18n';
+import { GITHUB_URL, TELEGRAM_BOT_URL, COPYRIGHT_YEAR } from '../config';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="top">
+      <div class="about">
+        <a class="brand" href={href(lang)}>
+          <img src={asset('images/use-logo.svg')} alt="" width="24" height="20" />
+          <span>United Software Engineers</span>
+        </a>
+        <p>{d.footer.about}</p>
+      </div>
+      <div class="cols">
+        <div>
+          <h4>{d.footer.club}</h4>
+          <a href={href(lang, 'projects')}>{d.nav.projects}</a>
+          <a href={href(lang, 'blog')}>{d.nav.blog}</a>
+          <a href={href(lang, 'collaboration')}>{d.nav.collaboration}</a>
+        </div>
+        <div>
+          <h4>{d.footer.join}</h4>
+          <a href={href(lang, 'join')}>{d.footer.howToJoin}</a>
+          <a href={TELEGRAM_BOT_URL} target="_blank" rel="noopener">{d.footer.ourBot}</a>
+          <a href={GITHUB_URL} target="_blank" rel="noopener">{d.footer.github}</a>
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+      <span>© {COPYRIGHT_YEAR} United Software Engineers</span>
+      <span>{d.footer.location}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    border-top: 1px solid var(--border);
+    padding: 48px 0 28px;
+    font-size: 13px;
+    background: #000;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .brand img {
+    width: 24px;
+    height: auto;
+  }
+
+  .about p {
+    margin-top: 14px;
+    max-width: 280px;
+    color: var(--text-3);
+    font-size: 12px;
+  }
+
+  .cols {
+    display: flex;
+    gap: clamp(40px, 10vw, 140px);
+  }
+
+  .cols div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  h4 {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .cols a {
+    color: var(--text-3);
+    font-size: 12px;
+    transition: color 0.2s;
+  }
+
+  .cols a:hover {
+    color: var(--text);
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 22px;
+    color: var(--text-3);
+    font-size: 11px;
+  }
+</style>

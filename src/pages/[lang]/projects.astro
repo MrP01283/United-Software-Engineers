@@ -1,0 +1,189 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { t, langPaths, type Lang } from '../../i18n';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.params.lang as Lang;
+const d = t(lang);
+const p = d.projects;
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const stacks = [...new Set(projects.flatMap((pr) => pr.data.stack))].sort();
+---
+
+<BaseLayout lang={lang} title={p.title} description={p.lead}>
+  <section class="page-hero">
+    <div class="top-glow"></div>
+    <div class="container">
+      <h1 class="enter">{p.title}</h1>
+      <p class="enter" style="--d:120ms">{p.lead}</p>
+    </div>
+  </section>
+
+  <section class="container list">
+    <div class="filters enter" style="--d:240ms" data-filters role="toolbar">
+      <button type="button" data-filter="*" aria-pressed="true">{p.all}</button>
+      {stacks.map((s) => <button type="button" data-filter={s} aria-pressed="false">{s}</button>)}
+    </div>
+
+    <div class="grid-3">
+      {projects.map((pr, i) => (
+        <article class="card project" data-reveal style={`--d:${(i % 3) * 100}ms`} data-stack={pr.data.stack.join('|')}>
+          <div class="head">
+            <span class:list={['status', pr.data.status]}>
+              <i></i>{p.status[pr.data.status]}
+            </span>
+          </div>
+          <h3>{pr.data.title[lang]}</h3>
+          <p>{pr.data.description[lang]}</p>
+          <div class="stack">
+            {pr.data.stack.map((s) => <span class="tag">{s}</span>)}
+          </div>
+          {(pr.data.repo || pr.data.demo) && (
+            <div class="links">
+              {pr.data.repo && (
+                <a href={pr.data.repo} target="_blank" rel="noopener"><Icon name="github" />{p.repo}</a>
+              )}
+              {pr.data.demo && (
+                <a href={pr.data.demo} target="_blank" rel="noopener"><Icon name="arrow" />{p.demo}</a>
+              )}
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+
+    <p class="note" data-reveal>{p.note}</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .list {
+    padding-bottom: clamp(80px, 10vw, 120px);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .filters button {
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-2);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+  }
+
+  .filters button:hover {
+    color: var(--text);
+    border-color: rgb(255 255 255 / 0.3);
+  }
+
+  .filters button[aria-pressed='true'] {
+    color: #fff;
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+
+  .project {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project:global(.is-hidden) {
+    display: none;
+  }
+
+  .head {
+    margin-bottom: 16px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  .status i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-3);
+  }
+
+  .status.active i {
+    background: #3ddc84;
+    box-shadow: 0 0 0 0 rgb(61 220 132 / 0.6);
+    animation: pulse 2s infinite;
+  }
+
+  .status.done i {
+    background: var(--blue-soft);
+  }
+
+  .status.idea i {
+    background: #f5b942;
+  }
+
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgb(61 220 132 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(61 220 132 / 0);
+    }
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 18px;
+  }
+
+  .links {
+    display: flex;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 20px;
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .links a:hover {
+    color: var(--blue-soft);
+  }
+
+  .links :global(svg) {
+    width: 15px;
+    height: 15px;
+  }
+
+  .note {
+    margin-top: 32px;
+    text-align: center;
+    color: var(--text-3);
+    font-size: 13px;
+  }
+</style>

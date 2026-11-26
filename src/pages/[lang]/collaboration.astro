@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { t, langPaths, type Lang } from '../../i18n';
+import { TELEGRAM_BOT_URL } from '../../config';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.params.lang as Lang;
+const c = t(lang).collab;
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.lead}>
+  <section class="page-hero">
+    <div class="top-glow"></div>
+    <div class="container">
+      <h1 class="enter"><span class="outline-title" data-text={c.title}>{c.title}</span></h1>
+      <p class="enter" style="--d:120ms">{c.lead}</p>
+      <div class="enter hero-btn" style="--d:240ms">
+        <a class="btn btn--primary" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener"><Icon name="telegram" />{c.ctaBtn}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container block">
+    <h2 class="section-title" data-reveal>{c.offersTitle}</h2>
+    <div class="grid-3 mt">
+      {c.offers.map((o, i) => (
+        <article class="card" data-reveal style={`--d:${i * 120}ms`}>
+          <span class="num">0{i + 1}</span>
+          <h3>{o.title}</h3>
+          <p>{o.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="container block">
+    <h2 class="section-title" data-reveal>{c.stepsTitle}</h2>
+    <div class="steps mt">
+      {c.steps.map((s, i) => (
+        <article class="card" data-reveal style={`--d:${i * 100}ms`}>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="container block last">
+    <div class="cta" data-reveal="scale">
+      <h2>{c.ctaTitle}</h2>
+      <p>{c.ctaText}</p>
+      <a class="btn btn--primary" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener"><Icon name="telegram" />{c.ctaBtn}</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero h1 .outline-title {
+    font-size: inherit;
+  }
+
+  .hero-btn {
+    position: relative;
+    margin-top: 28px;
+  }
+
+  .block {
+    padding-bottom: clamp(64px, 9vw, 110px);
+  }
+
+  .mt {
+    margin-top: 36px;
+  }
+
+  .last {
+    padding-bottom: clamp(80px, 10vw, 120px);
+  }
+</style>

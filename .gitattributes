@@ -1,0 +1,5 @@
+# Единые переводы строк (LF) для всех участников — на Windows, macOS и Linux.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary

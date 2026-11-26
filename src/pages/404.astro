@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { href, t } from '../i18n';
+
+// GitHub Pages показывает эту страницу для любых несуществующих адресов.
+const lang = 'ru';
+const d = t(lang);
+---
+
+<BaseLayout lang={lang} title={d.notFound.title}>
+  <section class="nf">
+    <div class="top-glow"></div>
+    <div class="container inner">
+      <span class="outline-title code enter" data-text="404">404</span>
+      <h1 class="enter" style="--d:120ms">{d.notFound.title}</h1>
+      <p class="enter" style="--d:200ms">{d.notFound.text}</p>
+      <div class="enter links" style="--d:300ms">
+        <a class="btn btn--primary" href={href('ru')}>{t('ru').notFound.btn}</a>
+        <a class="btn" href={href('kk')} lang="kk">{t('kk').notFound.btn}</a>
+        <a class="btn" href={href('en')} lang="en">{t('en').notFound.btn}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    min-height: 80vh;
+    display: grid;
+    place-items: center;
+    padding: calc(var(--header-h) + 60px) 0 80px;
+    text-align: center;
+  }
+
+  .inner {
+    position: relative;
+  }
+
+  .code {
+    font-size: clamp(110px, 24vw, 220px);
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    margin-top: 8px;
+  }
+
+  p {
+    margin: 12px auto 0;
+    color: var(--text-2);
+  }
+
+  .links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+  }
+</style>

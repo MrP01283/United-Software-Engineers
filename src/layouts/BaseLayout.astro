@@ -1,0 +1,61 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { LANGS, LANG_LABELS, href, asset, t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Заголовок страницы. Без него — общий заголовок сайта. */
+  title?: string;
+  description?: string;
+}
+
+const { lang, title, description } = Astro.props;
+const d = t(lang);
+const fullTitle = title ? `${title} — USE` : d.meta.title;
+const desc = description ?? d.meta.description;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const rest = Astro.url.pathname
+  .replace(base, '')
+  .replace(new RegExp(`^/${lang}(/|$)`), '')
+  .replace(/^\/|\/$/g, '');
+const canonical = new URL(href(lang, rest), Astro.site).toString();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
+    <link rel="canonical" href={canonical} />
+    {LANGS.map((l) => <link rel="alternate" hreflang={l} href={new URL(href(l, rest), Astro.site).toString()} />)}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={LANG_LABELS[lang].locale.replace('-', '_')} />
+    <meta property="og:image" content={new URL(asset('favicon.svg'), Astro.site).toString()} />
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <ClientRouter />
+  </head>
+  <body>
+    <Header lang={lang} />
+    <main>
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <script>
+      import '../scripts/main.ts';
+    </script>
+  </body>
+</html>

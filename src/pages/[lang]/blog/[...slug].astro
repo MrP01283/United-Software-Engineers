@@ -1,0 +1,155 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { href, t, isLang, formatDate, type Lang } from '../../../i18n';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (e) => !e.data.draft);
+  return posts
+    .map((post) => {
+      const [lang, ...rest] = post.id.split('/');
+      return { params: { lang, slug: rest.join('/') }, props: { post } };
+    })
+    .filter((p) => isLang(p.params.lang));
+}
+
+const { post } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const d = t(lang);
+const { Content } = await render(post);
+---
+
+<BaseLayout lang={lang} title={post.data.title} description={post.data.description}>
+  <article class="post">
+    <header class="page-hero">
+      <div class="top-glow"></div>
+      <div class="container narrow">
+        <a class="back enter" href={href(lang, 'blog')}>← {d.blog.back}</a>
+        <time class="enter" style="--d:80ms" datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>
+        <h1 class="enter" style="--d:160ms">{post.data.title}</h1>
+        <p class="enter" style="--d:240ms">{post.data.description}</p>
+      </div>
+    </header>
+    <div class="container narrow prose enter" style="--d:320ms">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: 760px;
+  }
+
+  .page-hero {
+    text-align: left;
+  }
+
+  .page-hero h1 {
+    font-size: clamp(32px, 5.5vw, 52px);
+  }
+
+  .page-hero p {
+    margin-inline: 0;
+  }
+
+  .back {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 28px;
+    color: var(--text-2);
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+
+  .back:hover {
+    color: var(--text);
+  }
+
+  time {
+    position: relative;
+    display: block;
+    margin-bottom: 12px;
+    color: var(--blue-soft);
+    font-size: 13px;
+  }
+
+  .prose {
+    padding-bottom: clamp(80px, 10vw, 120px);
+    color: #d4d8e0;
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  .prose :global(h2) {
+    margin: 2em 0 0.6em;
+    font-size: 26px;
+    color: var(--text);
+  }
+
+  .prose :global(h3) {
+    margin: 1.6em 0 0.5em;
+    font-size: 20px;
+    color: var(--text);
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.1em;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.4em;
+  }
+
+  .prose :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .prose :global(a) {
+    color: var(--blue-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose :global(blockquote) {
+    margin: 0 0 1.6em;
+    padding: 14px 18px;
+    border-left: 2px solid var(--blue);
+    background: rgb(30 102 255 / 0.08);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-2);
+    font-size: 15px;
+  }
+
+  .prose :global(blockquote p) {
+    margin: 0;
+  }
+
+  .prose :global(code) {
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--surface-2);
+    font-size: 0.9em;
+  }
+
+  .prose :global(pre) {
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 14px;
+  }
+
+  .prose :global(pre code) {
+    padding: 0;
+    background: none;
+  }
+
+  .prose :global(img) {
+    border-radius: 12px;
+    margin: 1.5em 0;
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+// Корень сайта: перенаправляет на язык браузера (kk/en), иначе на русский.
+import { href, asset } from '../i18n';
+const ru = href('ru');
+const kk = href('kk');
+const en = href('en');
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>United Software Engineers</title>
+    <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
+    <link rel="canonical" href={ru} />
+    <meta http-equiv="refresh" content={`1; url=${ru}`} />
+    <script is:inline define:vars={{ ru, kk, en }}>
+      var l = (navigator.languages || [navigator.language || '']).join(',').toLowerCase();
+      var target = /(^|,)kk/.test(l) ? kk : /(^|,)(ru|uk|be)/.test(l) ? ru : /(^|,)en/.test(l) ? en : ru;
+      location.replace(target);
+    </script>
+    <style>
+      body { margin: 0; background: #000; color: #a3a9b6; font: 14px system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; }
+      a { color: #8fb0ff; margin: 0 6px; }
+    </style>
+  </head>
+  <body>
+    <p><a href={ru}>Русский</a> · <a href={kk}>Қазақша</a> · <a href={en}>English</a></p>
+  </body>
+</html>

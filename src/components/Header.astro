@@ -1,0 +1,448 @@
+---
+import Icon from './Icon.astro';
+import { LANGS, LANG_LABELS, href, asset, t, type Lang } from '../i18n';
+import { GITHUB_URL, TELEGRAM_BOT_URL } from '../config';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+
+// Текущий путь без base и языка: /United-Software-Engineers/ru/blog/ → blog/
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const rest = Astro.url.pathname
+  .replace(base, '')
+  .replace(new RegExp(`^/${lang}(/|$)`), '')
+  .replace(/^\/|\/$/g, '');
+
+const links = [
+  { path: 'projects', label: d.nav.projects },
+  { path: 'blog', label: d.nav.blog },
+  { path: 'collaboration', label: d.nav.collaboration },
+  { path: 'join', label: d.nav.join },
+];
+const isActive = (path: string) => rest === path || rest.startsWith(path + '/');
+---
+
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href={href(lang)} aria-label={d.nav.home}>
+      <img src={asset('images/use-logo.svg')} alt="" width="26" height="22" />
+      <span>United Software Engineers</span>
+    </a>
+
+    <nav class="nav" aria-label="main">
+      {links.map((l) => (
+        <a href={href(lang, l.path)} class:list={['nav-link', { active: isActive(l.path) }]}>
+          {l.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="actions">
+      <div class="lang" data-lang>
+        <button class="lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label={d.nav.language}>
+          <Icon name="globe" class="ico" />
+          <span>{LANG_LABELS[lang].name}</span>
+          <Icon name="chevron" class="ico chev" />
+        </button>
+        <ul class="lang-menu" role="menu">
+          {LANGS.map((l) => (
+            <li role="none">
+              <a role="menuitem" href={href(l, rest)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+                {LANG_LABELS[l].name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <a class="btn btn--primary btn--sm" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener">{d.nav.cta}</a>
+      <a class="icon-link" href={GITHUB_URL} target="_blank" rel="noopener" aria-label={d.nav.github}>
+        <Icon name="github" />
+      </a>
+    </div>
+
+    <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="mobile-menu" aria-label={d.nav.menu}>
+      <Icon name="menu" class="i-open" />
+      <Icon name="close" class="i-close" />
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
+    <nav class="m-nav">
+      {links.map((l, i) => (
+        <a href={href(lang, l.path)} style={`--i:${i}`} class:list={{ active: isActive(l.path) }}>{l.label}</a>
+      ))}
+    </nav>
+    <div class="m-langs" style="--i:4">
+      {LANGS.map((l) => (
+        <a href={href(l, rest)} hreflang={l} aria-current={l === lang ? 'true' : undefined}>{LANG_LABELS[l].short}</a>
+      ))}
+    </div>
+    <div class="m-actions" style="--i:5">
+      <a class="btn btn--primary btn--block" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener">
+        <Icon name="telegram" />{d.nav.cta}
+      </a>
+      <a class="btn btn--block" href={GITHUB_URL} target="_blank" rel="noopener"><Icon name="github" />GitHub</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition:
+      background 0.35s var(--ease),
+      border-color 0.35s var(--ease),
+      backdrop-filter 0.35s var(--ease);
+  }
+
+  .site-header.scrolled {
+    background: rgb(0 0 0 / 0.62);
+    border-bottom-color: var(--border);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  .header-inner {
+    height: var(--header-h);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    justify-self: start;
+    white-space: nowrap;
+  }
+
+  .brand img {
+    width: 26px;
+    height: auto;
+    transition: transform 0.5s var(--ease);
+  }
+
+  .brand:hover img {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .nav {
+    display: flex;
+    gap: 4px;
+  }
+
+  .nav-link {
+    position: relative;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: var(--text-2);
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 1px;
+    height: 1px;
+    background: var(--blue-soft);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease);
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--text);
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    transform: scaleX(1);
+  }
+
+  .actions {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lang {
+    position: relative;
+  }
+
+  .lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: #0d0d10;
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .lang-btn:hover {
+    border-color: rgb(255 255 255 / 0.3);
+  }
+
+  .lang-btn :global(.ico) {
+    width: 14px;
+    height: 14px;
+    color: var(--text-2);
+  }
+
+  .lang-btn :global(.chev) {
+    transition: transform 0.3s var(--ease);
+  }
+
+  .lang.open .lang-btn :global(.chev) {
+    transform: rotate(180deg);
+  }
+
+  .lang-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: rgb(14 15 19 / 0.95);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px -12px rgb(0 0 0 / 0.8);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transform-origin: top right;
+    transition:
+      opacity 0.2s var(--ease),
+      transform 0.25s var(--ease),
+      visibility 0.2s;
+  }
+
+  .lang.open .lang-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .lang-menu a {
+    display: block;
+    padding: 7px 10px;
+    border-radius: 6px;
+    color: var(--text-2);
+    font-size: 13px;
+  }
+
+  .lang-menu a:hover {
+    background: rgb(255 255 255 / 0.06);
+    color: var(--text);
+  }
+
+  .lang-menu a[aria-current='true'] {
+    color: var(--text);
+    background: rgb(30 102 255 / 0.16);
+  }
+
+  .icon-link {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    color: var(--text);
+    transition:
+      transform 0.3s var(--ease),
+      color 0.2s;
+  }
+
+  .icon-link:hover {
+    color: var(--blue-soft);
+    transform: rotate(-10deg) scale(1.1);
+  }
+
+  .icon-link :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* --- мобильное меню --- */
+  .burger {
+    display: none;
+    justify-self: end;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: #0d0d10;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .burger :global(svg) {
+    width: 22px;
+    height: 22px;
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.25s,
+      transform 0.35s var(--ease);
+  }
+
+  .burger :global(.i-close) {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+
+  :global(body.menu-open) .burger :global(.i-open) {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+
+  :global(body.menu-open) .burger :global(.i-close) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .mobile-menu {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .header-inner {
+      grid-template-columns: 1fr auto;
+    }
+
+    .nav,
+    .actions {
+      display: none;
+    }
+
+    .burger {
+      display: grid;
+    }
+
+    .mobile-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      position: fixed;
+      inset: var(--header-h) 0 0;
+      padding: 32px 20px 40px;
+      background: rgb(0 0 0 / 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.3s var(--ease),
+        visibility 0.3s;
+    }
+
+    :global(body.menu-open) .mobile-menu {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    :global(body.menu-open) .site-header {
+      background: #000;
+      border-bottom-color: var(--border);
+    }
+
+    .m-nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .m-nav a {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--text-2);
+    }
+
+    .m-nav a.active {
+      color: var(--text);
+    }
+
+    .m-nav a,
+    .m-langs,
+    .m-actions {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.5s var(--ease),
+        transform 0.5s var(--ease);
+      transition-delay: calc(var(--i) * 50ms);
+    }
+
+    :global(body.menu-open) .m-nav a,
+    :global(body.menu-open) .m-langs,
+    :global(body.menu-open) .m-actions {
+      opacity: 1;
+      transform: none;
+    }
+
+    .m-langs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .m-langs a {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      color: var(--text-2);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .m-langs a[aria-current='true'] {
+      color: var(--text);
+      border-color: var(--blue);
+      background: rgb(30 102 255 / 0.16);
+    }
+
+    .m-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .m-actions .btn {
+      height: 48px;
+      font-size: 15px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .brand span {
+      font-size: 13px;
+    }
+  }
+</style>

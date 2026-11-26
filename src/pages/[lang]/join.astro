@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { t, langPaths, type Lang } from '../../i18n';
+import { TELEGRAM_BOT_URL } from '../../config';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.params.lang as Lang;
+const j = t(lang).join;
+---
+
+<BaseLayout lang={lang} title={j.title} description={j.lead}>
+  <section class="page-hero">
+    <div class="top-glow"></div>
+    <div class="container">
+      <h1 class="enter">{j.title}</h1>
+      <p class="enter" style="--d:120ms">{j.lead}</p>
+      <div class="enter hero-btn" style="--d:240ms">
+        <a class="btn btn--primary" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener"><Icon name="telegram" />{j.ctaBtn}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container block">
+    <h2 class="section-title" data-reveal>{j.whoTitle}</h2>
+    <ul class="who">
+      {j.who.map((w, i) => (
+        <li data-reveal style={`--d:${i * 90}ms`}>
+          <span class="check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 8.5l3 3 6-7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+          {w}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="container block">
+    <h2 class="section-title" data-reveal>{j.stepsTitle}</h2>
+    <div class="steps mt">
+      {j.steps.map((s, i) => (
+        <article class="card" data-reveal style={`--d:${i * 100}ms`}>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="container block">
+    <h2 class="section-title" data-reveal>{j.faqTitle}</h2>
+    <div class="faq mt">
+      {j.faq.map((f, i) => (
+        <details data-reveal style={`--d:${i * 70}ms`}>
+          <summary>
+            {f.q}
+            <span class="plus" aria-hidden="true"></span>
+          </summary>
+          <div class="answer"><p>{f.a}</p></div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="container block last">
+    <div class="cta" data-reveal="scale">
+      <h2>{j.ctaTitle}</h2>
+      <p>{j.ctaText}</p>
+      <a class="btn btn--primary" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener"><Icon name="telegram" />{j.ctaBtn}</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-btn {
+    position: relative;
+    margin-top: 28px;
+  }
+
+  .block {
+    padding-bottom: clamp(64px, 9vw, 110px);
+  }
+
+  .mt {
+    margin-top: 36px;
+  }
+
+  .last {
+    padding-bottom: clamp(80px, 10vw, 120px);
+  }
+
+  .who {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 12px;
+    max-width: 880px;
+    margin: 36px auto 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .who li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  .check {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: rgb(30 102 255 / 0.18);
+    color: var(--blue-soft);
+  }
+
+  .check svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .faq {
+    max-width: 780px;
+    margin-inline: auto;
+    display: grid;
+    gap: 10px;
+  }
+
+  details {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    transition: border-color 0.3s var(--ease);
+  }
+
+  details[open] {
+    border-color: rgb(143 176 255 / 0.3);
+  }
+
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .plus {
+    position: relative;
+    flex: none;
+    width: 14px;
+    height: 14px;
+  }
+
+  .plus::before,
+  .plus::after {
+    content: '';
+    position: absolute;
+    inset: 6px 0 auto;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--text-2);
+    transition: transform 0.35s var(--ease);
+  }
+
+  .plus::after {
+    transform: rotate(90deg);
+  }
+
+  details[open] .plus::after {
+    transform: rotate(0deg);
+  }
+
+  .answer {
+    padding: 0 20px 18px;
+    color: var(--text-2);
+    font-size: 15px;
+    animation: open 0.4s var(--ease);
+  }
+
+  @keyframes open {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+</style>
