@@ -49,6 +49,13 @@ const canonical = new URL(href(lang, rest), Astro.site).toString();
     <ClientRouter />
   </head>
   <body>
+    <!-- Фильтр для .outline-title: контур вокруг всей надписи (см. global.css) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <filter id="outline-filter" x="-2%" y="-10%" width="104%" height="120%" color-interpolation-filters="sRGB">
+        <feMorphology in="SourceGraphic" operator="dilate" radius="1.5" result="grown" />
+        <feComposite in="grown" in2="SourceAlpha" operator="out" />
+      </filter>
+    </svg>
     <Header lang={lang} />
     <main>
       <slot />
