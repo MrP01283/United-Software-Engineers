@@ -231,12 +231,16 @@ p {
   text-transform: uppercase;
 }
 
-/* Контурный заголовок с бегущим бликом по обводке */
+/* Контурный заголовок с бегущим бликом по обводке.
+   Inter — вариативный шрифт, внутри букв у него есть наложенные контуры.
+   Поэтому обводка в 2 раза толще, а заливка цветом фона рисуется ПОВЕРХ неё
+   (paint-order) и прячет внутреннюю половину вместе с лишними линиями. */
 .outline-title {
   position: relative;
   display: inline-block;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.5);
+  color: var(--bg);
+  -webkit-text-stroke: 3px rgb(255 255 255 / 0.5);
+  paint-order: stroke fill;
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -246,7 +250,9 @@ p {
   content: attr(data-text);
   position: absolute;
   inset: 0;
-  -webkit-text-stroke: 1.5px var(--blue-soft);
+  color: var(--bg);
+  -webkit-text-stroke: 3px var(--blue-soft);
+  paint-order: stroke fill;
   -webkit-mask-image: linear-gradient(100deg, transparent 0%, #000 50%, transparent 100%);
   mask-image: linear-gradient(100deg, transparent 0%, #000 50%, transparent 100%);
   -webkit-mask-size: 40% 100%;
