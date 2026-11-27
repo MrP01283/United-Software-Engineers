@@ -10,6 +10,10 @@ npm-debug.log*
 .env
 .env.*
 
+# случайные локальные файлы
+/Без имени.png
+/.claude/
+
 # системные файлы
 .DS_Store
 Thumbs.db
